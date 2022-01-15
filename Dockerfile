@@ -20,8 +20,10 @@ RUN apt-get update --fix-missing -qq && apt-get install -y -q \
     && apt-get purge \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz | tar -xzf && \
-    update --alternatives  
+RUN apt-get install -y software-properties-common debconf-utils
+RUN apt-add-repository ppa:openjdk-r/ppa
+RUN apt-get update
+RUN apt-get install -y openjdk-8-jre
 
 # Install samtools
 RUN wget https://github.com/samtools/samtools/releases/download/1.14/samtools-1.14.tar.bz2 && \

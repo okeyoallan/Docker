@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM debian:stable
 
 LABEL  maintainer "Okeyo Allan, <okeyoallan8@gmail.com>" \
        		  "Joyce Wangari, <wangarijoyce.jw@gmail.com>" \
@@ -20,8 +20,7 @@ RUN apt-get update --fix-missing -qq && apt-get install -y -q \
     && apt-get purge \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz && \
-    tar -xzf jdk-17_linux-x64_bin.tar.gz \
+RUN wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz | tar -xzf && \
     update --alternatives  
 
 # Install samtools
@@ -47,7 +46,7 @@ RUN wget https://github.com/samtools/htslib/releases/download/1.14/htslib-1.14.t
 	make && make install 
 
 # Install vcftools
-RUN wget https://sourceforge.net/projects/vcftools/files/vcftools_0.1.13.tar.gz/download | tar -xzf vcftools_0.1.13.tar.gz \
+RUN wget https://sourceforge.net/projects/vcftools/files/vcftools_0.1.13.tar.gz/download | tar -xzf && \
 	rm vcftools_0.1.13.tar.gz && \
 	cd vcftools_0.1.13 && \
 	./configure --prefix=/bin/ && \

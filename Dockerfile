@@ -1,94 +1,13 @@
 FROM debian:stable
+LABEL authors="Joyce Wangari and Okeyo Allan " \
+      description="Docker image packaged with all software and tools for running the variant calling pipeline"
 
-LABEL  maintainer "Okeyo Allan, <okeyoallan8@gmail.com>" \
-       		  "Joyce Wangari, <wangarijoyce.jw@gmail.com>" \
-       description "Variant calling pipeline with GATK4" \
-       version "1.0"
-      
-# package required dependencies
-RUN apt-get update --fix-missing -qq && apt-get install -y -q \
-    curl \
-    wget \
-    locales \
-    libncurses5-dev \
-    libncursesw5-dev \
-    build-essential \
-    pkg-config \
-    zlib1g-dev \
-    bzip2 \
-    && apt-get clean \
-    && apt-get purge \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Install the conda environment
+COPY environment.yml /
+RUN conda env create --quiet -f /environment.yml && conda clean -a
 
-RUN apt-get install -y software-properties-common debconf-utils
-RUN apt-add-repository ppa:openjdk-r/ppa
-RUN apt-get update
-RUN apt-get install -y openjdk-8-jre
+# Add conda installation dir to PATH (instead of doing 'conda activate')
+ENV PATH /opt/conda/envs/var/bin:$PATH
 
-# Install samtools
-RUN wget https://github.com/samtools/samtools/releases/download/1.14/samtools-1.14.tar.bz2 && \
-	tar -xf samtools-1.14.tar.bz2 && \
-	cd samtools-1.14 && \
-	./configure --prefix=/bin/ && \	
-	make && \
-	make install
-
-# Install bcftools
-RUN wget https://github.com/samtools/bcftools/releases/download/1.14/bcftools-1.14.tar.bz2 && \
-	tar -xf bcftools-1.14.tar.bz2 && \
-	cd bcftools-1.14 && \
-	./configure --prefix=/bin/ && \
-	make && \
-	make install 
-
-# Install htslib
-RUN wget https://github.com/samtools/htslib/releases/download/1.14/htslib-1.14.tar.bz2 | tar -xf htslib-1.14.tar.bz2 && \
-	cd htslib-1.14 && \
-	./configure --prefix=/bin && \
-	make && make install 
-
-# Install vcftools
-RUN wget https://sourceforge.net/projects/vcftools/files/vcftools_0.1.13.tar.gz/download | tar -xzf && \
-	rm vcftools_0.1.13.tar.gz && \
-	cd vcftools_0.1.13 && \
-	./configure --prefix=/bin/ && \
-	make && \
-	make install 
-
-
-# Install BWA
-RUN sudo apt update && \
-	sudo apt install bwa
-
-# Install fastqc
-RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip && \
-	unzip fastqc_v0.11.9.zip && \
-	cd fastqc_v0.11.9 \
-	./configure --prefix=/bin/ && \
-	make && \
-	make install 
-
-# Install GATK4
-RUN wget https://github.com/broadinstitute/gatk/releases/download/4.2.4.1/gatk-4.2.4.1.zip && \
-	unzip gatk-4.2.4.1.zip && \
-	cd gatk-4.2.4.1 && \ 
-	./configure --prefix=/bin/ && \
-	make && \
-	make install 
-
-# Install trimmomatic
-RUN sudo apt-get update -y && \
-     sudo apt-get install -y trimmomatic
-#Install SNPeff
-RUN wget https://snpeff.blob.core.windows.net/versions/snpEff_latest_core.zip && \
-	unzip snpEff_latest_core.zip \
-	./confirgure --prefix=/bin/ && \
-	make \
-	make install  
-
-RUN useradd --create-home --shell /bin/bash ubuntu && \
-  chown -R ubuntu:ubuntu /home/ubuntu
-
-USER ubuntu
-
-CMD ["/bin/bash","-i"]
+# Dump the details of the installed packages to a file for posterity
+RUN conda env export --name var-call > variant-call.yml

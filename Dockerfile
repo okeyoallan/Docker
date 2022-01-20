@@ -28,3 +28,7 @@ ENV PATH /opt/conda/envs/var/bin:$PATH
 
 # Dump the details of the installed packages to a file for posterity
 RUN conda env export --name var-call > variant-call.yml
+
+
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
+CMD [ "/bin/bash" ]

@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM ubuntu:20.04
 LABEL authors="Joyce Wangari and Okeyo Allan " \
       description="Docker image packaged with all software and tools for running the variant calling pipeline"
 

@@ -3,7 +3,7 @@ LABEL authors="Joyce Wangari and Okeyo Allan " \
       description="Docker image packaged with all software and tools for running the variant calling pipeline"
 
 # Install the conda environment
-COPY ./environment.yml /
+COPY /environment.yml /
 RUN conda env create --quiet -f /environment.yml && conda clean -a
 
 # Add conda installation dir to PATH (instead of doing 'conda activate')

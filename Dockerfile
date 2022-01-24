@@ -14,5 +14,4 @@ ENV PATH /opt/conda/envs/var/bin:$PATH
 RUN conda env export --name var-call > variant-call.yml
 
 
-ENTRYPOINT [ "/usr/bin/tini", "--" ]
 CMD [ "/bin/bash" ]
